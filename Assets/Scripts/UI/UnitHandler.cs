@@ -8,13 +8,13 @@ namespace UI
 {
     // Sets the script to be executed later than all default scripts
     // This is helpful for UI, since other things may need to be initialized before setting the UI
-   // [DefaultExecutionOrder(1000)]
+    [DefaultExecutionOrder(1000)]
     public class UnitHandler : MonoBehaviour
     {
-        public GameObject counterPrefab;
+        [SerializeField] private GameObject counterPrefab;
         private GameObject _counter;
         private Vector3 _offset; 
-        public Canvas canvas;
+        [SerializeField] private Canvas canvas;
         private TextMeshProUGUI _counterText;
         private Image _background;
 

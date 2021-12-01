@@ -1,34 +1,48 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Planets
 {
     public class Scientific : Base
     {
-        public Resources.ScientificResources scientificResources;
-        public float speed = 20.0f;
-
-        private float count = 0.0f;
+        [SerializeField] private Resources.Scientific scientific;
         
-        // Start is called before the first frame update
-        void Start()
+   
+        protected override void LoadResources()
         {
-            _uiHandler = GetComponent<UI.UnitHandler>();
-            SetRocket();
-            
+            base.LoadResources();
+            LoadScientificRes();
         }
 
-        // Update is called once per frame
-        void Update()
+        private void LoadScientificRes()
         {
-            count += ProduceCount / ProduceTime*Time.deltaTime;
-            _uiHandler.SetCounter((int)count);
-            transform.Rotate(Vector3.forward, speed*Time.deltaTime);
+            //load info about scientific resources
         }
 
-        protected override void SetRocket()
+
+
+        protected override void IncreaseResources()
         {
-            base.SetRocket();
-            //set rockets according user upgrades
+            base.IncreaseResources();
+            IncreaseScientificRes();
+        }
+
+        private void IncreaseScientificRes()
+        {
+            //add later
+        }
+
+
+        
+        protected override void DisplayUI()
+        {
+            base.DisplayUI();
+            DisplayScientificBar();
+        }
+
+        private void DisplayScientificBar()
+        {
+            //add later
         }
     }
 }

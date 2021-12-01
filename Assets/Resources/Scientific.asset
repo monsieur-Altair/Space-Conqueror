@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8198880750d404cb58a07d9e9b963d4, type: 3}
-  m_Name: Scientific Resource
+  m_Name: scientific
   m_EditorClassIdentifier: 
   name: mana
-  max: 15
+  maxCount: 200
   produceCount: 2
   produceTime: 1
-  color: {r: 0.5377358, g: 0, b: 0.075267814, a: 1}
+  color: {r: 0, g: 0.062184714, b: 0.5283019, a: 1}

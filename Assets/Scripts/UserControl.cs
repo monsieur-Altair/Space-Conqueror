@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 public class UserControl : MonoBehaviour
 {
@@ -10,20 +11,20 @@ public class UserControl : MonoBehaviour
     private Camera _mainCamera;
 
     private List<Planets.Base> _selectablePlanets;
-    private Planets.Base _destination=null;
+    private Planets.Base _destination = null;
     public UnityEvent onSelectPlanet;
-    public event Action<Planets.Base> cancelSelect;
-    public event Action<Planets.Base> launchUnit;
-    
+    public event Action<Object, Planets.Base> CancelingSelection;
+    public event Action<Object, Planets.Base> Selecting;
+
     public void Start()
     {
-        _mainCamera=Camera.main;
+        _mainCamera = Camera.main;
         if (_mainCamera == null)
             throw new MyException("can't get camera: " + name);
         _selectablePlanets = new List<Planets.Base>();
-        cancelSelect += DecreaseScale;
-        cancelSelect += RemoveFromList;
-        launchUnit = cancelSelect;
+        CancelingSelection += DecreaseScale;
+        Selecting += IncreaseScale;
+        Selecting += AddToList;
     }
 
     public void Update()
@@ -37,7 +38,7 @@ public class UserControl : MonoBehaviour
 
     private void HandleTouch()
     {
-        switch (_touch.phase)   
+        switch (_touch.phase)
         {
             case TouchPhase.Began:
             {
@@ -55,7 +56,7 @@ public class UserControl : MonoBehaviour
                 break;
             }
         }
-        
+
     }
 
     private void HandleClick()
@@ -63,39 +64,43 @@ public class UserControl : MonoBehaviour
         var planet = RaycastForPlanet();
         if (planet != null)
         {
-            if (_selectablePlanets.Contains(planet)==false)
+            if (_selectablePlanets.Contains(planet) == false)
             {
-                planet.transform.localScale *= 1.5f;
-                _selectablePlanets.Add(planet);
+                OnSelecting(planet);
             }
         }
     }
 
     private void HandleRelease()
     {
-        var planet = RaycastForPlanet();
-        if (planet == null)
+        if (RaycastForPlanet() == null)
         {
-            CancelSelection();
+            foreach (var planet in _selectablePlanets)
+            {
+                OnCancelingSelection(planet);
+            }
+            _selectablePlanets.Clear();
+            return;
         }
+        
         int count = _selectablePlanets.Count;
         if (count > 1)
         {
             _destination = _selectablePlanets[count - 1];
-            _selectablePlanets.RemoveAt(count-1);
+            OnCancelingSelection(_destination);
+            _selectablePlanets.Remove(_destination);
             LaunchToDestination(_destination);
-            _destination.transform.localScale /= 1.5f;
         }
     }
 
-    private void CancelSelection()
+    protected virtual void OnSelecting(Planets.Base planet)
     {
-        foreach (var planet in _selectablePlanets)
-        {
-            cancelSelect?.Invoke(planet);
-            //planet.transform.localScale /= 1.5f;
-        }
-        //_selectablePlanets.Clear();
+        Selecting?.Invoke(this, planet);
+    }
+    
+    private void OnCancelingSelection(Planets.Base planet)
+    {
+        CancelingSelection?.Invoke(this, planet);
     }
 
     private Planets.Base RaycastForPlanet()
@@ -103,7 +108,7 @@ public class UserControl : MonoBehaviour
         var ray = _mainCamera.ScreenPointToRay(_touch.position);
         return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponentInParent<Planets.Base>() : null;
     }
-    
+
     private void HandleMultipleSelection()
     {
         var planet = RaycastForPlanet();
@@ -112,39 +117,45 @@ public class UserControl : MonoBehaviour
             if (_selectablePlanets.Contains(planet))
             {
                 _selectablePlanets.Remove(planet);
+                _selectablePlanets.Add(planet);
             }
             else
             {
-                planet.transform.localScale *= 1.5f;
+                OnSelecting(planet);
             }
-            _selectablePlanets.Add(planet);
+
         }
     }
-    
+
     private void LaunchToDestination(Planets.Base destination)
     {
         foreach (var planet in _selectablePlanets)
         {
+            OnCancelingSelection(planet);
             planet.LaunchUnit(destination);
-            planet.transform.localScale /= 1.5f;
         }
-
         _selectablePlanets.Clear();
     }
 
-    private void DecreaseScale(Planets.Base unit)
+    private void DecreaseScale(Object sender, Planets.Base planet)
     {
-        unit.transform.localScale /= 1.5f;
+        planet.transform.localScale /= 1.5f;
+    }
+    
+    private void IncreaseScale(Object sender, Planets.Base planet)
+    {
+        planet.transform.localScale *= 1.5f;
+    }
+    
+    private void AddToList(Object sender, Planets.Base planet)
+    {
+        _selectablePlanets.Add(planet);
     }
 
-    private void RemoveFromList(Planets.Base unit)
-    {
-        _selectablePlanets.Remove(unit);
-    }
-    
+ 
+}
+
     //handle ui selection
     //handle skill selection
-    
-    
-    
-}
+
+

@@ -6,18 +6,26 @@ namespace Planets
     public abstract class Base : MonoBehaviour
     {
         
-        [SerializeField] protected Resources.Unit resourceUnit;
+        [SerializeField] private Resources.Unit resourceUnit;
+        [SerializeField] private Resources.Planet resourcePlanet;
+        
         protected UI.UnitHandler UIHandler;
         public float speed = 20.0f;
         private float _count = 0.0f;
-
-
+        private UnitInf _unitInf;
+        
         protected float MaxCount { get; private set; }
         protected float ProduceCount { get; private  set; }
         protected float ProduceTime { get; private  set; }
         protected float Defense { get; private  set; }
-        protected float Speed { get; private set; }
-        protected float Damage { get; private set; }
+
+        public struct UnitInf
+        {
+            public float Speed { get; internal set; }
+            public float Damage { get; internal set;}
+            public float UnitCount { get; internal set; }
+        }
+        
 
 
         // Start is called before the first frame update
@@ -28,7 +36,7 @@ namespace Planets
                 throw new MyException("ui handler is not loaded: "+name);
             if (resourceUnit == null) 
                 throw new MyException("resource is not loaded: "+name);
-            
+            _unitInf = new UnitInf();
             LoadResources();
         }
 
@@ -41,12 +49,13 @@ namespace Planets
 
         protected virtual void LoadResources()
         {
-            MaxCount = resourceUnit.maxCount;
-            ProduceCount = resourceUnit.produceCount;
-            ProduceTime = resourceUnit.produceTime;
-            Defense = resourceUnit.defense;
-            Speed = resourceUnit.speed;
-            Damage = resourceUnit.damage;
+            MaxCount = resourcePlanet.maxCount;
+            ProduceCount = resourcePlanet.produceCount;
+            ProduceTime = resourcePlanet.produceTime;
+            Defense = resourcePlanet.defense;
+            
+            _unitInf.Speed = resourceUnit.speed;
+            _unitInf.Damage = resourceUnit.damage;
         }
 
         protected virtual void Move()
@@ -64,20 +73,37 @@ namespace Planets
             UIHandler.SetCounter((int)_count);
         }
 
-        public void LaunchUnit(Base destination)
+        public void LaunchUnit(Planets.Base destination)
         {
             var radiusCurrent = GetComponent<SphereCollider>().radius;
+            var radiusDest = destination.GetComponent<SphereCollider>().radius;
+
             var currentPos = transform.position;
             var destinationPos = destination.transform.position;
-            var offset = (destinationPos - currentPos).normalized*radiusCurrent;
-            var radiusDest = destination.GetComponent<SphereCollider>().radius;
-            var prefab = resourceUnit.prefab;
+
+            var offset = (destinationPos - currentPos).normalized;
             var unit = Instantiate(
-                prefab, 
-                currentPos+offset, 
-                Quaternion.LookRotation(offset))
-                .GetComponent<Units.Base>();
-            unit.GoTo(destinationPos-offset*radiusDest);
+                    resourceUnit.prefab, 
+                    currentPos+offset*radiusCurrent, 
+                    Quaternion.LookRotation(offset)).GetComponent<Units.Base>();
+
+            SetUnitCount();
+            unit.SetData(_unitInf);
+            unit.GoTo(destination,destinationPos-offset*radiusDest);
         }
+
+        private void SetUnitCount()
+        {
+            float unitCount=_count / 2;
+            _unitInf.UnitCount = unitCount;
+            _count -= unitCount;
+        }
+
+        public void AttackedByUnit(Units.Base unit)
+        {
+            //add condition about team 
+            _count += unit.CalculateAttack();
+        }
+        
     }
 }

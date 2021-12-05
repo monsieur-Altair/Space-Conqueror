@@ -11,21 +11,15 @@ namespace Managers
     [DefaultExecutionOrder(1000)]
     public class Outlook : MonoBehaviour
     {
-        /*private MeshRenderer _planetRenderer;
-        private MeshRenderer _torchRenderer;*/
-        //public Material planetMaterial;
-        //public Material torchMaterial;
-
+        
         [SerializeField] private List<Material> scientificMaterials;
         [SerializeField] private List<Material> lanternsMaterials;
         [SerializeField] private List<Material> rocketsMaterials;
-        [SerializeField] private List<Color> counterBackground;
-        [SerializeField] private List<Color> counterForeground;
-        [SerializeField] private GameObject planetsLay;
-        private List<Planets.Base> _allPlanets;
-        private List<MeshRenderer> _planetsRenderer=new List<MeshRenderer>();
-        private List<MeshRenderer> _lanternsRenderer=new List<MeshRenderer>();
 
+        private readonly Dictionary<int, MeshRenderer> _planetsRenderer = new Dictionary<int, MeshRenderer>();
+        private readonly Dictionary<int, MeshRenderer> _lanternsRenderer = new Dictionary<int, MeshRenderer>();
+
+        private List<Planets.Base> _allPlanets => Main.Instance.AllPlanets;
         public static Outlook Instance { get; private set; }
 
         public void Awake()
@@ -35,7 +29,6 @@ namespace Managers
                 Instance = this;
             }
         }
-
         private Outlook()
         {
             
@@ -43,41 +36,60 @@ namespace Managers
         
         public void Start()
         {
-            /*var planetObject = transform.GetChild(0).gameObject;
-            _planetRenderer = planetObject.GetComponent<MeshRenderer>();
-            if(_planetRenderer==null)
-                throw new MyException("can't use mesh renderer: "+name);
-
-            _torchRenderer = planetObject.transform.GetChild(0).GetComponent<MeshRenderer>();
-            if(_torchRenderer==null)
-                throw new MyException("can't use torch renderer: "+name);*/
-            
             FillList();
+            SetAllOutlooks();
+        }
+
+        private void SetAllOutlooks()
+        {
+            foreach (var planet in _allPlanets)
+            {
+                SetOutlook(planet);
+            }
         }
 
         private void FillList()
         {
-            _allPlanets = planetsLay.GetComponentsInChildren<Planets.Base>().ToList();
             foreach (var planet in _allPlanets)
             {
-                var circle = planet.transform.GetChild(0);
-                _planetsRenderer.Add(circle.GetComponent<MeshRenderer>());
-                _lanternsRenderer.Add(circle.transform.GetChild(0).GetComponent<MeshRenderer>());
-                SetOutlook(planet);
+                switch (planet.Type)
+                {
+                    case Type.Scientific:
+                        DecomposeScientific(planet);
+                        break;
+                    case Type.Spawner:
+                        break;
+                    case Type.Attacker:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
+        }
+
+        private void DecomposeScientific(Planets.Base planet)
+        {
+            var index = planet.transform.position.GetHashCode();
+            var circle = planet.transform.GetChild(0);
+            _planetsRenderer.Add(index,circle.GetComponent<MeshRenderer>());
+            _lanternsRenderer.Add(index,circle.transform.GetChild(0).GetComponent<MeshRenderer>());
+        }
+
+        private void ComposeScientific(int index, int team)
+        {
+            _planetsRenderer[index].material = scientificMaterials[team];
+            _lanternsRenderer[index].material = lanternsMaterials[team];
         }
         
         public void SetOutlook(Planets.Base planet)
         {
             var team = (int)planet.Team;
-            int index = _allPlanets.IndexOf(planet);
-            
-            
+            int index = planet.transform.position.GetHashCode();
+
             switch (planet.Type)
             {
                 case Type.Scientific:
-                    _planetsRenderer[index].material = scientificMaterials[team];
-                    _lanternsRenderer[index].material = lanternsMaterials[team];
+                    ComposeScientific(index,team);
                     break;
                 case Type.Spawner:
                     break;
@@ -86,9 +98,6 @@ namespace Managers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            /*_planetRenderer.material = planetMaterial;
-            _torchRenderer.material = torchMaterial;*/
-
         }
 
         public void SetOutlook(Planets.Base planet, Units.Base unit)

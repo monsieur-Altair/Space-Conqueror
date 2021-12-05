@@ -13,8 +13,8 @@ public class UserControl : MonoBehaviour
     private List<Planets.Base> _selectablePlanets;
     private Planets.Base _destination = null;
     public UnityEvent onSelectPlanet;
-    public event Action<Object, Planets.Base> CancelingSelection;
-    public event Action<Object, Planets.Base> Selecting;
+    private event Action<Object, Planets.Base> CancelingSelection;
+    private event Action<Object, Planets.Base> Selecting;
 
     public void Start()
     {
@@ -93,7 +93,7 @@ public class UserControl : MonoBehaviour
         }
     }
 
-    protected virtual void OnSelecting(Planets.Base planet)
+    private void OnSelecting(Planets.Base planet)
     {
         Selecting?.Invoke(this, planet);
     }

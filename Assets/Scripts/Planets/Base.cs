@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine; 
 
 namespace Planets
@@ -17,31 +18,28 @@ namespace Planets
     [RequireComponent(typeof(Collider))]
     public abstract class Base : MonoBehaviour
     {
-        
-        [SerializeField] private Resources.Unit resourceUnit;
-        [SerializeField] private Resources.Planet resourcePlanet;
         [SerializeField] private Team team;
         [SerializeField] private Type type;
+        [SerializeField] private Resources.Unit resourceUnit;
+        [SerializeField] private Resources.Planet resourcePlanet;
 
+        private const float LaunchCoefficient = 0.5f;
+
+        private Managers.Main _main;
         private Managers.Outlook _outlook;
         private Managers.UI _ui; 
-        protected UI.UnitHandler UIHandler;
-        public float speed = 20.0f;
+        
+        private float speed = 20.0f;
         private float _count;
         private UnitInf _unitInf;
-
-        //private static readonly int Property = Shader.PropertyToID("scientific-red");
-
+        
         protected float MaxCount { get; private set; }
         protected float ProduceCount { get; private set; }
         protected float ProduceTime { get; private set; }
         protected float Defense { get; private set; }
-        public Team Team { get; internal set; }
-        public Type Type { get; internal set; }
+        public Team Team { get; private set; }
+        public Type Type { get; private set; }
         
-
-
-    
         
         public struct UnitInf
         {
@@ -57,9 +55,6 @@ namespace Planets
         public void Start()
         {
             _count = 0.0f;
-            UIHandler = GetComponent<UI.UnitHandler>();
-            if (UIHandler == null) 
-                throw new MyException("ui handler is not loaded: "+name);
 
             if (resourceUnit == null) 
                 throw new MyException("resource is not loaded: "+name);
@@ -67,9 +62,9 @@ namespace Planets
             _unitInf = new UnitInf();
             _outlook=Managers.Outlook.Instance;
             _ui = Managers.UI.Instance;
+            _main=Managers.Main.Instance;
             LoadResources();
         }
-
         public void Update()
         {
             Move();
@@ -86,11 +81,10 @@ namespace Planets
             Defense = resourcePlanet.defense;
             Team = team;
             Type = type;
-            //Debug.Log(Team);
             
             _unitInf.Speed = resourceUnit.speed;
             _unitInf.Damage = resourceUnit.damage;
-
+            _unitInf.Team = Team;
         }
 
         protected virtual void Move()
@@ -101,12 +95,13 @@ namespace Planets
         protected virtual void IncreaseResources()
         {
             _count += ProduceCount / ProduceTime * Time.deltaTime;
+            if (_count > MaxCount) 
+                _count = MaxCount;
         }
 
         protected virtual void DisplayUI()
         {
             _ui.SetCounter(this,(int)_count);
-            //UIHandler.SetCounter((int)_count);
         }
 
         public void LaunchUnit(Planets.Base destination)
@@ -131,16 +126,36 @@ namespace Planets
 
         private void SetUnitCount()
         {
-            float unitCount=_count / 2;
+            float unitCount=_count*LaunchCoefficient;
             _unitInf.UnitCount = unitCount;
             _count -= unitCount;
         }
 
+
         public void AttackedByUnit(Units.Base unit)
         {
-            //add condition about team 
-            _count += unit.CalculateAttack();
+            var unitTeam = unit.getTeam();
+            var attack=unit.CalculateAttack();
+            attack *= this.Team == unitTeam ? 1 : -1;
+            _count += attack;
+            if (_count < 0)
+            {
+                _main.UpdateObjectsCount(Team,unitTeam);
+                SwitchTeam(unitTeam);
+                _main.CheckGameOver();
+            }
         }
-        
+
+        private void SwitchTeam(Planets.Team newTeam)
+        {
+            
+            team = newTeam;
+            //reset resources
+            LoadResources();
+
+            _outlook.SetOutlook(this);
+            _ui.SetCounterColor(this);
+            _count *= -1;
+        }
     }
 }

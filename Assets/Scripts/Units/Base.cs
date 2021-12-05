@@ -11,10 +11,13 @@ namespace Units
 
         private Vector3 _destination;
         protected Planets.Base Target;
+   
 
         //override this method to adjust functionality, when unit arrives at the target  
         protected abstract void TargetInRange();
         public abstract void SetData(Planets.Base.UnitInf unitInf);
+
+        public abstract Planets.Team getTeam();
         protected abstract void SetSpeed();
         public abstract float CalculateAttack();
         

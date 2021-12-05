@@ -7,6 +7,7 @@ namespace Planets
     {
         [SerializeField] private Resources.Scientific scientific;
         
+        
    
         protected override void LoadResources()
         {

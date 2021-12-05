@@ -11,19 +11,17 @@ namespace Managers
     {
         public static UI Instance { get; private set; }
         
-        
         [SerializeField] private GameObject counterPrefab;
-        [SerializeField] private GameObject planetsLay;
         [SerializeField] private Canvas canvas;
         
-        private List<Planets.Base> _allPlanets;
-        //private List<GameObject> _counter=new List<GameObject>();
-        //private List<TextMeshProUGUI> _foregrounds=new List<TextMeshProUGUI>();
-        //private List<Image> _backgrounds = new List<Image>();
+        [SerializeField] private List<Color> counterBackground;
+        [SerializeField] private List<Color> counterForeground;
         
-        private Dictionary<int,GameObject> _counter=new Dictionary<int, GameObject>();
-        private Dictionary<int,Image> _backgrounds=new Dictionary<int, Image>();
-        private Dictionary<int,TextMeshProUGUI> _foregrounds=new Dictionary<int, TextMeshProUGUI>();
+        private List<Planets.Base> _allPlanets => Main.Instance.AllPlanets;
+
+        // private Dictionary<int,GameObject> _counter=new Dictionary<int, GameObject>();
+        private readonly Dictionary<int,Image> _backgrounds=new Dictionary<int, Image>();
+        private readonly Dictionary<int,TextMeshProUGUI> _foregrounds=new Dictionary<int, TextMeshProUGUI>();
 
         public void Awake()
         {
@@ -34,42 +32,48 @@ namespace Managers
         }
         private Vector3 _offset; 
 
-
-        //private float _number = 0;
         private void Start()
         {
-            /*float colliderLength = GetComponent<SphereCollider>().radius;
-            Debug.Log(colliderLength);*/
             _offset = new Vector3(0, -30.0f, 0);
-            //find out how to calculate offset for counter
             FillLists();
+            SetAllCountersColor();
         }
         
         private void FillLists()
         {
-            Vector3 pos;
-            GameObject counter;
-            int index;
-            _allPlanets = planetsLay.GetComponentsInChildren<Planets.Base>().ToList();
+            if (Camera.main == null)
+                throw new MyException("main camera = null");
             foreach (var planet in _allPlanets)
             {
-                pos = planet.transform.position;
-                counter = Instantiate(counterPrefab, canvas.transform);
+                var pos = planet.transform.position;
+                var counter = Instantiate(counterPrefab, canvas.transform);
                 counter.transform.position = Camera.main.WorldToScreenPoint(pos) + _offset;
-                index = pos.GetHashCode();
-                _counter.Add(index,counter);
+                var index = pos.GetHashCode();
+                //_counter.Add(index,counter);
                 _foregrounds.Add(index, counter.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>());
                 _backgrounds.Add(index, counter.GetComponentInChildren<Image>());
-                //_counter.Add(counter);
-                //_foregrounds.Add(counter.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>());
-                //_backgrounds.Add(counter.GetComponentInChildren<Image>());
-                
             }
         }
 
+
+        private void SetAllCountersColor()
+        {
+            foreach (var planet in _allPlanets)
+            {
+                SetCounterColor(planet);
+            }
+        }
+
+        public void SetCounterColor(Planets.Base planet)
+        {
+            var team = (int) planet.Team;
+            int index = planet.transform.position.GetHashCode();
+            _foregrounds[index].color = counterForeground[team];
+            _backgrounds[index].color = counterBackground[team];
+        }
+        
         public void SetCounter(Planets.Base planet, int value)
         {
-            //int index = _allPlanets.IndexOf(planet);
             int index = planet.transform.position.GetHashCode();
             _foregrounds[index].text = value.ToString();
         }

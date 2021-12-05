@@ -5,7 +5,7 @@ namespace Units
 {
     public class Rocket : Base
     {
-
+        
         private Planets.Base.UnitInf _unitInf;
         protected override void TargetInRange()
         {
@@ -27,6 +27,7 @@ namespace Units
 
         public override float CalculateAttack()
         {
+            //damage in percent
             return _unitInf.Damage / 100.0f* _unitInf.UnitCount;
         }
         

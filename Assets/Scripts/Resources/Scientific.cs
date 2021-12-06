@@ -11,6 +11,5 @@ namespace Resources
         public float produceCount;
         public float produceTime;
 
-        public Color color;
     }
 }

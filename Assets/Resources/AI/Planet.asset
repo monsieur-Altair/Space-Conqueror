@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7475b95743b44dcbabbfaad5001aab0, type: 3}
-  m_Name: Planet 1
+  m_Name: Planet
   m_EditorClassIdentifier: 
   maxCount: 50
   produceCount: 1

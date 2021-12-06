@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine; 
 
@@ -25,13 +26,17 @@ namespace Planets
 
         private const float LaunchCoefficient = 0.5f;
 
-        private Managers.Main _main;
+        protected Managers.Main Main;
         private Managers.Outlook _outlook;
-        private Managers.UI _ui; 
+        protected Managers.UI UI; 
         
         private float speed = 20.0f;
         private float _count;
         private UnitInf _unitInf;
+
+        private static int _id = 0;
+        
+        public int ID { get; private set; }
         
         protected float MaxCount { get; private set; }
         protected float ProduceCount { get; private set; }
@@ -52,25 +57,32 @@ namespace Planets
 
 
         // Start is called before the first frame update
-        public void Start()
+        public virtual void Start()
         {
             _count = 0.0f;
-
+            ID = _id++;
+            
             if (resourceUnit == null) 
                 throw new MyException("resource is not loaded: "+name);
             
             _unitInf = new UnitInf();
             _outlook=Managers.Outlook.Instance;
-            _ui = Managers.UI.Instance;
-            _main=Managers.Main.Instance;
+            UI = Managers.UI.Instance;
+            Main = Managers.Main.Instance;
+            
             LoadResources();
         }
         public void Update()
         {
             Move();
             IncreaseResources();
+        }
+
+        public void LateUpdate()
+        {
             DisplayUI();
         }
+
 
         protected virtual void LoadResources()
         {
@@ -101,7 +113,7 @@ namespace Planets
 
         protected virtual void DisplayUI()
         {
-            _ui.SetCounter(this,(int)_count);
+            UI.SetUnitCounter(this,(int)_count);
         }
 
         public void LaunchUnit(Planets.Base destination)
@@ -113,11 +125,22 @@ namespace Planets
             var destinationPos = destination.transform.position;
 
             var offset = (destinationPos - currentPos).normalized;
-            var unit = Instantiate(
+            
+            /*var unit = Instantiate(
                     resourceUnit.prefab, 
                     currentPos+offset*radiusCurrent, 
-                    Quaternion.LookRotation(offset)).GetComponent<Units.Base>();
+                    Quaternion.LookRotation(offset)).GetComponent<Units.Base>();*/
 
+            #region Object pooling
+
+            var unit = Managers.ObjectPool.Instance.GetObject(
+                Type,
+                currentPos+offset*radiusCurrent, 
+                Quaternion.LookRotation(offset)
+            ).GetComponent<Units.Base>();
+
+            #endregion
+            
             SetUnitCount();
             _outlook.SetOutlook(this, unit);
             unit.SetData(_unitInf);
@@ -140,9 +163,9 @@ namespace Planets
             _count += attack;
             if (_count < 0)
             {
-                _main.UpdateObjectsCount(Team,unitTeam);
+                Main.UpdateObjectsCount(Team,unitTeam);
                 SwitchTeam(unitTeam);
-                _main.CheckGameOver();
+                Main.CheckGameOver();
             }
         }
 
@@ -154,7 +177,7 @@ namespace Planets
             LoadResources();
 
             _outlook.SetOutlook(this);
-            _ui.SetCounterColor(this);
+            UI.SetUnitCounterColor(this);
             _count *= -1;
         }
     }

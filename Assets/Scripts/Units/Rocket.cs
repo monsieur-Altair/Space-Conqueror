@@ -11,7 +11,8 @@ namespace Units
         protected override void TargetInRange()
         {
             Target.AttackedByUnit(this);
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            gameObject.SetActive(false);
             Target = null;
         }
         

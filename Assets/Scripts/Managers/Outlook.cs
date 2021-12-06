@@ -69,7 +69,7 @@ namespace Managers
 
         private void DecomposeScientific(Planets.Base planet)
         {
-            var index = planet.transform.position.GetHashCode();
+            var index = planet.ID.GetHashCode();
             var circle = planet.transform.GetChild(0);
             _planetsRenderer.Add(index,circle.GetComponent<MeshRenderer>());
             _lanternsRenderer.Add(index,circle.transform.GetChild(0).GetComponent<MeshRenderer>());
@@ -84,7 +84,7 @@ namespace Managers
         public void SetOutlook(Planets.Base planet)
         {
             var team = (int)planet.Team;
-            int index = planet.transform.position.GetHashCode();
+            int index = planet.ID.GetHashCode();
 
             switch (planet.Type)
             {

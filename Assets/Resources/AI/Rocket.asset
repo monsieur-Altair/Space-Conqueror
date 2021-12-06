@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4e50a4842294124a568b651a2854807, type: 3}
-  m_Name: Rocket 1
+  m_Name: Rocket
   m_EditorClassIdentifier: 
   name: rocket
   damage: 100

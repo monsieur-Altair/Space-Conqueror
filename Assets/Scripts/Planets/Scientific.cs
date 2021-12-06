@@ -6,9 +6,14 @@ namespace Planets
     public class Scientific : Base
     {
         [SerializeField] private Resources.Scientific scientific;
+
+        public int MaxCountScientific { get; private set; }
+        public float ProduceCountScientific { get; private set; }
+        public float ProduceTimeScientific { get; private set; }
+        public static float ScientificCount { get; private set; }
         
         
-   
+        
         protected override void LoadResources()
         {
             base.LoadResources();
@@ -17,7 +22,9 @@ namespace Planets
 
         private void LoadScientificRes()
         {
-            //load info about scientific resources
+            MaxCountScientific = scientific.maxCount;
+            ProduceCountScientific = scientific.produceCount;
+            ProduceTimeScientific = scientific.produceTime;
         }
 
 
@@ -30,7 +37,11 @@ namespace Planets
 
         private void IncreaseScientificRes()
         {
-            //add later
+            //CHANGE FOR EVERY TEAM
+            if(Team==Team.Blue)
+                ScientificCount += ProduceCountScientific / ProduceTimeScientific * Time.deltaTime;
+            if (ScientificCount > MaxCountScientific)
+                ScientificCount = MaxCountScientific;
         }
 
 
@@ -43,7 +54,7 @@ namespace Planets
 
         private void DisplayScientificBar()
         {
-            //add later
+            UI.SetScientificCounter((int)ScientificCount);
         }
     }
 }

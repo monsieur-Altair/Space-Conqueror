@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Managers
 {
-    [DefaultExecutionOrder(1000)]
+    [DefaultExecutionOrder(600)]
     public class UI : MonoBehaviour
     {
         public static UI Instance { get; private set; }
@@ -16,6 +15,8 @@ namespace Managers
         
         [SerializeField] private List<Color> counterBackground;
         [SerializeField] private List<Color> counterForeground;
+
+        [SerializeField] private TextMeshProUGUI textScientific;
         
         private List<Planets.Base> _allPlanets => Main.Instance.AllPlanets;
 
@@ -48,7 +49,7 @@ namespace Managers
                 var pos = planet.transform.position;
                 var counter = Instantiate(counterPrefab, canvas.transform);
                 counter.transform.position = Camera.main.WorldToScreenPoint(pos) + _offset;
-                var index = pos.GetHashCode();
+                var index = planet.ID.GetHashCode();
                 //_counter.Add(index,counter);
                 _foregrounds.Add(index, counter.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>());
                 _backgrounds.Add(index, counter.GetComponentInChildren<Image>());
@@ -60,22 +61,30 @@ namespace Managers
         {
             foreach (var planet in _allPlanets)
             {
-                SetCounterColor(planet);
+                SetUnitCounterColor(planet);
             }
+            
+            textScientific.color=Color.blue;
+
         }
 
-        public void SetCounterColor(Planets.Base planet)
+        public void SetUnitCounterColor(Planets.Base planet)
         {
             var team = (int) planet.Team;
-            int index = planet.transform.position.GetHashCode();
+            int index = planet.ID.GetHashCode();
             _foregrounds[index].color = counterForeground[team];
             _backgrounds[index].color = counterBackground[team];
         }
         
-        public void SetCounter(Planets.Base planet, int value)
+        public void SetUnitCounter(Planets.Base planet, int value)
         {
-            int index = planet.transform.position.GetHashCode();
+            int index = planet.ID.GetHashCode();
             _foregrounds[index].text = value.ToString();
+        }
+
+        public void SetScientificCounter(int value)
+        {
+            textScientific.text = value.ToString();
         }
     }
 }

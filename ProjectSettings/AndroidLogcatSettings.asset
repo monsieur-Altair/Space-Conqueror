@@ -3,8 +3,8 @@
     "m_SelectedPackage": {
         "deviceId": "1950ae63",
         "name": "com.DefaultCompany.Demo",
-        "processId": 21954,
-        "exited": true
+        "processId": 9912,
+        "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
@@ -18,6 +18,12 @@
             "deviceId": "1950ae63",
             "name": "com.DefaultCompany.Demo",
             "processId": 21954,
+            "exited": false
+        },
+        {
+            "deviceId": "1950ae63",
+            "name": "com.DefaultCompany.Demo",
+            "processId": 9912,
             "exited": false
         }
     ],

@@ -28,7 +28,8 @@ namespace Planets
 
         protected Managers.Main Main;
         private Managers.Outlook _outlook;
-        protected Managers.UI UI; 
+        protected Managers.UI UI;
+        protected Managers.ObjectPool Pool;
         
         private float speed = 20.0f;
         private float _count;
@@ -37,6 +38,7 @@ namespace Planets
         private static int _id = 0;
         
         public int ID { get; private set; }
+        public float Radius { get; private set; }
         
         protected float MaxCount { get; private set; }
         protected float ProduceCount { get; private set; }
@@ -69,7 +71,8 @@ namespace Planets
             _outlook=Managers.Outlook.Instance;
             UI = Managers.UI.Instance;
             Main = Managers.Main.Instance;
-            
+            Pool = Managers.ObjectPool.Instance;
+            Radius = GetComponent<SphereCollider>().radius;
             LoadResources();
         }
         public void Update()
@@ -99,9 +102,12 @@ namespace Planets
             _unitInf.Team = Team;
         }
 
+        public bool isMove = true;
+        
         protected virtual void Move()
         {
-            transform.Rotate(Vector3.up, speed*Time.deltaTime,Space.World);
+            if(isMove)
+                transform.Rotate(Vector3.up, speed*Time.deltaTime,Space.World);
         }
 
         protected virtual void IncreaseResources()
@@ -118,46 +124,54 @@ namespace Planets
 
         public void LaunchUnit(Planets.Base destination)
         {
-            var radiusCurrent = GetComponent<SphereCollider>().radius;
-            var radiusDest = destination.GetComponent<SphereCollider>().radius;
-
-            var currentPos = transform.position;
-            var destinationPos = destination.transform.position;
-
-            var offset = (destinationPos - currentPos).normalized;
+            CalculateLaunchPositions( out var launchPos,out var destPos,this,destination);
             
-            /*var unit = Instantiate(
-                    resourceUnit.prefab, 
-                    currentPos+offset*radiusCurrent, 
-                    Quaternion.LookRotation(offset)).GetComponent<Units.Base>();*/
-
             #region Object pooling
 
-            var unit = Managers.ObjectPool.Instance.GetObject(
+            var unit = Pool.GetObject(
                 Type,
-                currentPos+offset*radiusCurrent, 
-                Quaternion.LookRotation(offset)
+                launchPos, 
+                Quaternion.LookRotation(destPos-launchPos)
             ).GetComponent<Units.Base>();
 
             #endregion
             
-            SetUnitCount();
-            _outlook.SetOutlook(this, unit);
-            unit.SetData(_unitInf);
-            unit.GoTo(destination,destinationPos-offset*radiusDest);
+            AdjustUnit(unit);
+            DecreaseCounter();
+            unit.GoTo(destination,destPos);
         }
 
+        private static void CalculateLaunchPositions(out Vector3 st, out Vector3 dest, Base stBase, Base destBase)
+        {
+            //st=start, dest=destination
+            var stPos = stBase.transform.position;
+            var destPos = destBase.transform.position;
+            var offset = (destPos - stPos).normalized;
+            st = stPos + offset * stBase.Radius;
+            dest = destPos - offset * destBase.Radius;
+        }
+
+        private void DecreaseCounter()
+        {
+            _count *= (1-LaunchCoefficient);
+        }
+        
+        public void AdjustUnit(Units.Base unit)
+        {
+            SetUnitCount();
+            _outlook.SetOutlook(this, unit);
+            unit.SetData(in _unitInf);
+        }
+        
         private void SetUnitCount()
         {
-            float unitCount=_count*LaunchCoefficient;
-            _unitInf.UnitCount = unitCount;
-            _count -= unitCount;
+            _unitInf.UnitCount = _count*LaunchCoefficient;
         }
 
 
         public void AttackedByUnit(Units.Base unit)
         {
-            var unitTeam = unit.getTeam();
+            var unitTeam = unit.GETTeam();
             var attack=unit.CalculateAttack();
             attack *= this.Team == unitTeam ? 1 : -1;
             _count += attack;

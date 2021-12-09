@@ -10,19 +10,21 @@ namespace Units
 
         protected override void TargetInRange()
         {
-            Target.AttackedByUnit(this);
+            //Debug.Log("arrived");
+            if(Target!=null)
+                Target.AttackedByUnit(this);
             //Destroy(gameObject);
             gameObject.SetActive(false);
             Target = null;
         }
         
 
-        public override void SetData(Planets.Base.UnitInf unitInf)
+        public override void SetData(in Planets.Base.UnitInf unitInf)
         {
             _unitInf = unitInf;
         }
 
-        public override Team getTeam() => _unitInf.Team;
+        public override Team GETTeam() => _unitInf.Team;
 
         protected override void SetSpeed()
         {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4664045234893563162}
   - component: {fileID: 371950713}
   - component: {fileID: 1787512184970467169}
-  - component: {fileID: 7163798615773799899}
+  - component: {fileID: -4249054778435079496}
   m_Layer: 6
   m_Name: Rocket
   m_TagString: Untagged
@@ -83,7 +83,7 @@ CapsuleCollider:
   m_Height: 1.09
   m_Direction: 2
   m_Center: {x: 0, y: 0.35, z: 0}
---- !u!54 &7163798615773799899
+--- !u!54 &-4249054778435079496
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

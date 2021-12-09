@@ -4,7 +4,10 @@ using UnityEngine.AI;
 
 namespace Units
 {
-    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(
+        typeof(NavMeshAgent),
+        typeof(Collider), 
+        typeof(Rigidbody))]
     public abstract class Base : MonoBehaviour
     {
         protected NavMeshAgent Agent;
@@ -15,9 +18,9 @@ namespace Units
 
         //override this method to adjust functionality, when unit arrives at the target  
         protected abstract void TargetInRange();
-        public abstract void SetData(Planets.Base.UnitInf unitInf);
+        public abstract void SetData(in Planets.Base.UnitInf unitInf);
 
-        public abstract Planets.Team getTeam();
+        public abstract Planets.Team GETTeam();
         protected abstract void SetSpeed();
         public abstract float CalculateAttack();
         
@@ -36,6 +39,7 @@ namespace Units
                     transform.rotation = Quaternion.LookRotation(Agent.velocity.normalized);
                 }*/
                 var distance = Vector3.Distance(_destination, transform.position);
+                //Debug.Log(distance);
                 if (distance < MinDistance)
                 {
                     Agent.isStopped = true;
@@ -44,7 +48,7 @@ namespace Units
             }
         }
 
-        private void GoTo(Vector3 destinationPos)
+        public void GoTo(Vector3 destinationPos)
         {
             _destination = destinationPos;
 

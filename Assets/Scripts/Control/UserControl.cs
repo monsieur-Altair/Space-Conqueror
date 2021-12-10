@@ -25,7 +25,7 @@ namespace Control
                 //Debug.Log("touch screen\n");
                 
                 _touch = Input.GetTouch(0);
-                if(_skillController.IsClickedSkill)
+                if(_skillController.IsSelectedSkill)
                     _skillController.HandleTouch(_touch);
                 else
                     _planetController.HandleTouch(_touch);

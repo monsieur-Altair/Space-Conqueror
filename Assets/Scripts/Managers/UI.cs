@@ -19,6 +19,10 @@ namespace Managers
         [SerializeField] private TextMeshProUGUI textScientific;
         
         private List<Planets.Base> _allPlanets => Main.Instance.AllPlanets;
+        private Camera _mainCamera;
+        
+        private static float MAXDepth;
+        private static float MINDepth;
 
         // private Dictionary<int,GameObject> _counter=new Dictionary<int, GameObject>();
         private readonly Dictionary<int,Image> _backgrounds=new Dictionary<int, Image>();
@@ -35,7 +39,13 @@ namespace Managers
 
         private void Start()
         {
-            _offset = new Vector3(0, -30.0f, 0);
+            Control.SkillController.GetCameraDepths(out MINDepth, out MAXDepth);
+
+            _mainCamera=Camera.main;
+            if (_mainCamera == null)
+                throw new MyException("can't get camera component");
+            
+            _offset = new Vector3(0, -1.0f, 0);
             FillLists();
             SetAllCountersColor();
         }
@@ -48,15 +58,27 @@ namespace Managers
             {
                 var pos = planet.transform.position;
                 var counter = Instantiate(counterPrefab, canvas.transform);
-                counter.transform.position = Camera.main.WorldToScreenPoint(pos) + _offset;
+                _offset = FindOffset(pos);
+                counter.transform.position = _mainCamera.WorldToScreenPoint(pos) + _offset;
                 var index = planet.ID.GetHashCode();
                 //_counter.Add(index,counter);
                 _foregrounds.Add(index, counter.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>());
                 _backgrounds.Add(index, counter.GetComponentInChildren<Image>());
             }
         }
+        
 
-
+        private Vector3 FindOffset(Vector3 worldPos)
+        {
+            var screenPos = _mainCamera.WorldToScreenPoint(worldPos);
+            var depth = screenPos.z;
+            var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth);
+            var res = new Vector3(0, offsetY, 0);
+            Debug.Log(res+" "+MAXDepth+" "+MINDepth);
+            return res;
+        }
+        
+        
         private void SetAllCountersColor()
         {
             foreach (var planet in _allPlanets)

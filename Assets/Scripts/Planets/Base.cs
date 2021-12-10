@@ -155,6 +155,11 @@ namespace Planets
         {
             _count *= (1-LaunchCoefficient);
         }
+
+        public void DecreaseCounter(float value)
+        {
+            _count -= value;
+        }
         
         public void AdjustUnit(Units.Base unit)
         {

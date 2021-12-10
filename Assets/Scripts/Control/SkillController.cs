@@ -9,7 +9,7 @@ using Button = UnityEngine.UI.Button;
 
 namespace Control
 {
-    internal enum SkillName
+    public enum SkillName
     {
         Buff=0,
         Acid,
@@ -21,40 +21,40 @@ namespace Control
     public class SkillController : MonoBehaviour
     {
         [SerializeField] private List<Button> buttons;
+        
         private const int Buff = 0, Acid = 1, Ice = 2, Call = 3;
         private Touch _touch;
         private SkillName _selectedSkillName;
         private Skills.Call _call;
+        private Skills.Buff _buff;
+
         public static SkillController Instance;
-        
         public Camera MainCamera { get; private set; }
         public float MinDepth { get; private set; }
         public float MaxDepth { get; private set; }
         public bool IsClickedSkill { get; private set; }
-
         public void Awake()
         {
             if (Instance == null)
                 Instance = this;
         }
 
-        private UnityAction<Button> _pressedButton;
-
         public void Start()
         {
-            foreach (var button in buttons)
+            /*foreach (var button in buttons)
             {
                 button.onClick.AddListener(() =>
                 {
                     OnPressedButton(button);
                 });
-            }
+            }*/
             
             MainCamera=Camera.main;
             IsClickedSkill = false;
             _selectedSkillName = SkillName.None;
             
             _call = buttons[Call].GetComponent<Skills.Call>();
+            _buff = buttons[Buff].GetComponent<Skills.Buff>();
             
             MinDepth = MaxDepth = 0.0f;
             GetCameraDepths();
@@ -109,15 +109,7 @@ namespace Control
             if (IsClickedSkill)
             {
                 var skill= ChooseSkill();
-                //gameObject.GetComponent<Skills.Call>();
                 skill.Execute(_touch.position);
-                
-                //Debug.Log("worked "+value++ +"\n");
-                /////////////////////////////////////////////////////////////////////
-                foreach (var button in buttons)
-                {
-                    UnBlockButton(button);
-                }
                 IsClickedSkill = false;   
             }
         }
@@ -126,7 +118,7 @@ namespace Control
         {
             return _selectedSkillName switch
             {
-                SkillName.Buff => null,
+                SkillName.Buff => _buff,
                 SkillName.Acid => null,
                 SkillName.Ice => null,
                 SkillName.Call => _call,
@@ -142,7 +134,7 @@ namespace Control
             
         }*/
 
-        private void OnPressedButton(Button button)
+        public void HandlePress(Button button)
         {
             if (!IsClickedSkill)
             {
@@ -152,7 +144,7 @@ namespace Control
             }
             else
             {
-                /////////////////////////////////////////////////////////////////////
+                ////
                 foreach (var b in buttons)
                 {
                     UnBlockButton(b);
@@ -161,14 +153,14 @@ namespace Control
             }
         }
 
-        IEnumerator SwitchWithWaiting()
+        private IEnumerator SwitchWithWaiting()
         {
             //if not use waiting, touch "handle release" will be worked immediately
             yield return new WaitForSeconds(0.1f);//0.1s is finger lift time
             IsClickedSkill = true;
         }
 
-        private void BlockButton(Button button)
+        private void BlockButton(Button button)////////////////////////////////////////////
         {
             var index = buttons.IndexOf(button);
             _selectedSkillName = (SkillName)index;
@@ -176,7 +168,7 @@ namespace Control
             button.image.color=Color.red;
         }
         
-        private void UnBlockButton(Button button)
+        public void UnBlockButton(Button button)
         {
             button.image.color=Color.white;
             _selectedSkillName = SkillName.None;

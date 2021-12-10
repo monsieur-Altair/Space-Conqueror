@@ -11,8 +11,11 @@ namespace Planets
         public float ProduceCountScientific { get; private set; }
         public float ProduceTimeScientific { get; private set; }
         public static float ScientificCount { get; private set; }
-        
-        
+
+        public static void DecreaseScientificCount(float value)
+        {
+            ScientificCount -= value;
+        }
         
         protected override void LoadResources()
         {

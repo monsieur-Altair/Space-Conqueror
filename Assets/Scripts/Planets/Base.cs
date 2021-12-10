@@ -194,5 +194,15 @@ namespace Planets
             UI.SetUnitCounterColor(this);
             _count *= -1;
         }
+
+        public void BuffUnitAttack(float percent)
+        {
+            _unitInf.Damage *= (1 + percent / 100.0f);
+        }
+
+        public void CancelBuff(float percent)
+        {
+            _unitInf.Damage /= (1 + percent / 100.0f);
+        }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.Rendering;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Skills
@@ -12,6 +10,13 @@ namespace Skills
         private Control.SkillController _skillController;
         private Camera _mainCamera;
         private Managers.ObjectPool _objectPool;
+        public Resources.Call resource;
+        private Button _button;
+        private bool _isOnCooldown = false;
+        public float Cooldown { get; private set; }
+        public int Cost { get; private set; }
+        public float Percent { get; private set; }
+
         public void Start()
         {
             _skillController = Control.SkillController.Instance;
@@ -23,16 +28,40 @@ namespace Skills
             _objectPool = Managers.ObjectPool.Instance;
             if (_objectPool == null)
                 throw new MyException("can't get object pool");
+            _button = GetComponent<Button>();
+            
+            _button.onClick.AddListener(() => { _skillController.HandlePress(_button);});
+            
+            LoadResources();
+        }
+
+        private void LoadResources()
+        {
+            Cooldown = resource.cooldown;
+            Percent = resource.callPercent;
+            Cost = resource.cost;
         }
 
         public void Execute(Vector3 pos)
         {
             var planet= RaycastForPlanet(pos);
-            if (planet != null)
+            if (planet != null && Planets.Scientific.ScientificCount>Cost)
             {
                 planet.isMove = !planet.isMove;
                 CallSupply(planet);
+                _isOnCooldown = true;
+                Planets.Scientific.DecreaseScientificCount(Cost);
+                Invoke(nameof(UnblockButton), Cooldown);
             }
+            else
+            {
+                UnblockButton();
+            }
+        }
+
+        private void UnblockButton()
+        {
+            _skillController.UnBlockButton(_button);
         }
 
         private Planets.Base RaycastForPlanet(Vector3 pos)

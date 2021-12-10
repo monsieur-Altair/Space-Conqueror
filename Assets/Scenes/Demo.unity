@@ -1652,6 +1652,7 @@ GameObject:
   - component: {fileID: 1124760092}
   - component: {fileID: 1124760091}
   - component: {fileID: 1124760090}
+  - component: {fileID: 1124760093}
   m_Layer: 5
   m_Name: 1
   m_TagString: Untagged
@@ -1761,6 +1762,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1124760088}
   m_CullTransparentMesh: 1
+--- !u!114 &1124760093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124760088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2403a1fd0f504169b08050cb48362c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resource: {fileID: 11400000, guid: 1c9aa00b048ad2241934abdaad833f64, type: 2}
 --- !u!4 &1168826296 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 197819518840556359, guid: 9faab6cb44bf8574887c47e0884e3ebd,
@@ -2665,6 +2679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e109caef41ed4577a3e3b433a673f533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resource: {fileID: 11400000, guid: bbfcb65a50e6c5547a4115feea91f710, type: 2}
 --- !u!1001 &375050772353002575
 PrefabInstance:
   m_ObjectHideFlags: 0

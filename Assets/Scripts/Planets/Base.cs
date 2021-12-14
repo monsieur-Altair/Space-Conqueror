@@ -17,7 +17,7 @@ namespace Planets
         Attacker=2
     }
     [RequireComponent(typeof(Collider))]
-    public abstract class Base : MonoBehaviour
+    public abstract class Base : MonoBehaviour, Skills.IFreezable
     {
         [SerializeField] private Team team;
         [SerializeField] private Type type;
@@ -102,19 +102,22 @@ namespace Planets
             _unitInf.Team = Team;
         }
 
-        public bool isMove = true;
-        
+        private bool _isFreezed=false;
+
         protected virtual void Move()
         {
-            if(isMove)
+            if(!_isFreezed)
                 transform.Rotate(Vector3.up, speed*Time.deltaTime,Space.World);
         }
 
         protected virtual void IncreaseResources()
         {
-            _count += ProduceCount / ProduceTime * Time.deltaTime;
-            if (_count > MaxCount) 
-                _count = MaxCount;
+            if (!_isFreezed)
+            {
+                _count += ProduceCount / ProduceTime * Time.deltaTime;
+                if (_count > MaxCount) 
+                    _count = MaxCount;
+            }
         }
 
         protected virtual void DisplayUI()
@@ -137,7 +140,7 @@ namespace Planets
             #endregion
             
             AdjustUnit(unit);
-            DecreaseCounter();
+            LaunchFromCounter();
             unit.GoTo(destination,destPos);
         }
 
@@ -151,7 +154,7 @@ namespace Planets
             dest = destPos - offset * destBase.Radius;
         }
 
-        private void DecreaseCounter()
+        private void LaunchFromCounter()
         {
             _count *= (1-LaunchCoefficient);
         }
@@ -159,6 +162,8 @@ namespace Planets
         public void DecreaseCounter(float value)
         {
             _count -= value;
+            if (_count < 0.0f)
+                _count = 0.0f;
         }
         
         public void AdjustUnit(Units.Base unit)
@@ -208,6 +213,16 @@ namespace Planets
         public void CancelBuff(float percent)
         {
             _unitInf.Damage /= (1 + percent / 100.0f);
+        }
+
+        public void Freeze()
+        {
+            _isFreezed = true;
+        }
+
+        public void Unfreeze()
+        {
+            _isFreezed = false;
         }
     }
 }

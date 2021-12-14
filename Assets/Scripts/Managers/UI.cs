@@ -35,7 +35,8 @@ namespace Managers
                 Instance = this;
             }
         }
-        private Vector3 _offset; 
+        private Vector3 _offsetCamera;
+        private Vector3 _offsetCounter;
 
         private void Start()
         {
@@ -45,7 +46,8 @@ namespace Managers
             if (_mainCamera == null)
                 throw new MyException("can't get camera component");
             
-            _offset = new Vector3(0, -1.0f, 0);
+            _offsetCamera = new Vector3(0, -1.0f, 0);
+            _offsetCounter = new Vector3(0, 0, 0);
             FillLists();
             SetAllCountersColor();
         }
@@ -58,8 +60,10 @@ namespace Managers
             {
                 var pos = planet.transform.position;
                 var counter = Instantiate(counterPrefab, canvas.transform);
-                _offset = FindOffset(pos);
-                counter.transform.position = _mainCamera.WorldToScreenPoint(pos) + _offset;
+                _offsetCamera = FindOffset(pos);
+                var screenPos = _mainCamera.WorldToScreenPoint(pos+_offsetCounter);
+                //Debug.Log("screen = "+screenPos);
+                counter.transform.position = screenPos + _offsetCamera;
                 var index = planet.ID.GetHashCode();
                 //_counter.Add(index,counter);
                 _foregrounds.Add(index, counter.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>());
@@ -72,9 +76,10 @@ namespace Managers
         {
             var screenPos = _mainCamera.WorldToScreenPoint(worldPos);
             var depth = screenPos.z;
-            var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth);
+            var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth)*80.0f;
+            //var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth);
             var res = new Vector3(0, offsetY, 0);
-            Debug.Log(res+" "+MAXDepth+" "+MINDepth);
+            //Debug.Log(res+" "+MAXDepth+" "+MINDepth);
             return res;
         }
         
@@ -85,9 +90,7 @@ namespace Managers
             {
                 SetUnitCounterColor(planet);
             }
-            
             textScientific.color=Color.blue;
-
         }
 
         public void SetUnitCounterColor(Planets.Base planet)

@@ -9,8 +9,6 @@ namespace Control
         private PlanetController _planetController;
         private SkillController _skillController;
     
-   
-
         public void Start()
         {
             _planetController = GetComponent<PlanetController>();
@@ -28,14 +26,9 @@ namespace Control
                 if(_skillController.IsSelectedSkill)
                     _skillController.HandleTouch(_touch);
                 else
-                    _planetController.HandleTouch(_touch);
-                
+                    _planetController.HandleTouch(_touch); 
             }
         }
-
-
-
-   
     }
 }
 

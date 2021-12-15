@@ -1,5 +1,3 @@
-using System;
-using TMPro;
 using UnityEngine; 
 
 namespace Planets
@@ -34,11 +32,12 @@ namespace Planets
         private float speed = 20.0f;
         private float _count;
         private UnitInf _unitInf;
+        private bool _isFrozen=false;
 
         private static int _id = 0;
         
         public int ID { get; private set; }
-        public float Radius { get; private set; }
+        public float OrbitRadius { get; private set; }
         
         protected float MaxCount { get; private set; }
         protected float ProduceCount { get; private set; }
@@ -57,7 +56,6 @@ namespace Planets
         }
         
 
-
         // Start is called before the first frame update
         public virtual void Start()
         {
@@ -72,7 +70,7 @@ namespace Planets
             UI = Managers.UI.Instance;
             Main = Managers.Main.Instance;
             Pool = Managers.ObjectPool.Instance;
-            Radius = GetComponent<SphereCollider>().radius;
+            OrbitRadius = GetComponent<SphereCollider>().radius;
             LoadResources();
         }
         public void Update()
@@ -102,17 +100,16 @@ namespace Planets
             _unitInf.Team = Team;
         }
 
-        private bool _isFreezed=false;
 
         protected virtual void Move()
         {
-            if(!_isFreezed)
+            if(!_isFrozen)
                 transform.Rotate(Vector3.up, speed*Time.deltaTime,Space.World);
         }
 
         protected virtual void IncreaseResources()
         {
-            if (!_isFreezed)
+            if (!_isFrozen)
             {
                 _count += ProduceCount / ProduceTime * Time.deltaTime;
                 if (_count > MaxCount) 
@@ -140,7 +137,7 @@ namespace Planets
             #endregion
             
             AdjustUnit(unit);
-            LaunchFromCounter();
+            LaunchFromCounter();//decrease counter
             unit.GoTo(destination,destPos);
         }
 
@@ -150,8 +147,8 @@ namespace Planets
             var stPos = stBase.transform.position;
             var destPos = destBase.transform.position;
             var offset = (destPos - stPos).normalized;
-            st = stPos + offset * stBase.Radius;
-            dest = destPos - offset * destBase.Radius;
+            st = stPos + offset * stBase.OrbitRadius;
+            dest = destPos - offset * destBase.OrbitRadius;
         }
 
         private void LaunchFromCounter()
@@ -217,12 +214,12 @@ namespace Planets
 
         public void Freeze()
         {
-            _isFreezed = true;
+            _isFrozen = true;
         }
 
         public void Unfreeze()
         {
-            _isFreezed = false;
+            _isFrozen = false;
         }
     }
 }

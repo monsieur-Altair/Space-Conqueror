@@ -16,18 +16,7 @@ namespace Skills
       
         protected override void ApplySkill(Vector3 pos)
         {
-            Planet = RaycastForPlanet(pos);
-            if (Planet != null)
-            {
-                CallSupply(Planet);
-                IsOnCooldown = true;
-                Planets.Scientific.DecreaseScientificCount(Cost);
-                Invoke(nameof(CancelSkill), Cooldown);
-            }
-            else
-            {
-                UnblockButton();
-            }
+            ApplySkillToPlanet(pos, CallSupply);
         }
 
         protected override void CancelSkill()
@@ -36,23 +25,23 @@ namespace Skills
             UnblockButton();
         }
         
-        private void CallSupply(Planets.Base destinationPlanet)
+        private void CallSupply()
         {
-            var launchPos= FindSpawnPoint(destinationPlanet);
-            var destPos = CalculateDestPos(launchPos, destinationPlanet);
-            var unit = ObjectPool.GetObject(destinationPlanet.Type, 
+            var launchPos= FindSpawnPoint(SelectedPlanet);
+            var destPos = CalculateDestPos(launchPos, SelectedPlanet);
+            var unit = ObjectPool.GetObject(SelectedPlanet.Type, 
                 launchPos, 
                 Quaternion.LookRotation(destPos-launchPos))
                 .GetComponent<Units.Base>();
-            destinationPlanet.AdjustUnit(unit);
-            unit.GoTo(destinationPlanet, destPos);
+            SelectedPlanet.AdjustUnit(unit);
+            unit.GoTo(SelectedPlanet, destPos);
         }
         
         private Vector3 CalculateDestPos(in Vector3 launchPos, Planets.Base destinationPlanet)
         {
             var destPos = destinationPlanet.transform.position;
             var offset = (destPos - launchPos).normalized;
-            return destPos - offset * destinationPlanet.Radius;
+            return destPos - offset * destinationPlanet.OrbitRadius;
         }
         
         //calculate a min way on SCREEN (NOT WORLD) coordinates for supply

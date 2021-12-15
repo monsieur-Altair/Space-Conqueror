@@ -1420,8 +1420,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca7c7237bcf73f142b5b44accfbd21cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultResolution: {x: 720, y: 1280}
-  WidthOrHeight: 0.5
+  defaultResolution: {x: 720, y: 1280}
+  widthOrHeight: 0.5
 --- !u!1 &972599319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2365,7 +2365,7 @@ GameObject:
   - component: {fileID: 1841460968}
   - component: {fileID: 1841460967}
   - component: {fileID: 1841460969}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: NavMeshSurface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2588,7 +2588,7 @@ MonoBehaviour:
   type: 2
   resourceUnit: {fileID: 11400000, guid: ef4201503508ce24eba422d5c1d0f314, type: 2}
   resourcePlanet: {fileID: 11400000, guid: face58731701fc1489033df9770fa002, type: 2}
-  _resourceBullet: {fileID: 11400000, guid: ba85070279ded7d42b4bf299137c8805, type: 2}
+  resourceBullet: {fileID: 11400000, guid: ba85070279ded7d42b4bf299137c8805, type: 2}
 --- !u!135 &2113800144
 SphereCollider:
   m_ObjectHideFlags: 0

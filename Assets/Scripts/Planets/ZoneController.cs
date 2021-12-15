@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planets
 {
@@ -28,18 +27,6 @@ namespace Planets
             
             if (_team != unit.getTeam())
                 _planet.StartAttackingUnits(unit);
-        }
-        
-       
-
-        private void LaunchUnit()
-        {
-            
-        }
-        
-        private void OnTriggerExit(Collider other)
-        {
-            Debug.Log("Exit");
         }*/
     }
 }

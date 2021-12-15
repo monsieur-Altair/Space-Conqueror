@@ -17,26 +17,18 @@ namespace Skills
 
         protected override void ApplySkill(Vector3 pos)
         {
-            Planet = RaycastForPlanet(pos);
-            if (Planet != null)
-            {
-                
-                Planet.BuffUnitAttack(BuffPercent);
-                //add VFX
-                IsOnCooldown = true;
-                Planets.Scientific.DecreaseScientificCount(Cost);
-                Invoke(nameof(CancelSkill), Cooldown);
-            }
-            else
-            {
-                UnblockButton();
-            }
+            ApplySkillToPlanet(pos, BuffPlanet);
         }
 
+        private void BuffPlanet()
+        {
+            SelectedPlanet.BuffUnitAttack(BuffPercent);
+        }
+        
         protected override void CancelSkill()
         {
             IsOnCooldown = false;
-            Planet.CancelBuff(BuffPercent);
+            SelectedPlanet.CancelBuff(BuffPercent);
             UnblockButton();
         }
     }

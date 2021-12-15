@@ -125,7 +125,7 @@ namespace Control
             {
                 SkillName.Buff => _buff,
                 SkillName.Acid => _acid,
-                SkillName.Ice => _ice,
+                SkillName.Ice  => _ice,
                 SkillName.Call => _call,
                 SkillName.None => null,
                 _ => throw new ArgumentOutOfRangeException()

@@ -9,12 +9,14 @@ namespace Skills
     {
         [SerializeField] private GameObject actionZone;
         
-        private const float Radius = 3.0f;
+        //private const float Radius = 3.0f;
+        private const float PlanetLayHeight = 0.66f;
         public float Duration { get; private set; }
 
-        private GameObject _freezingZone;
+        private GameObject _freezingObject;
+        private Control.Zone _freezingZone;
         private Plane _plane;
-
+        
         public static event Action DeletingFreezingZone;
         protected override void LoadResources()
         {
@@ -25,23 +27,37 @@ namespace Skills
                 Duration = res.duration;
             }
 
-            _freezingZone = Instantiate(actionZone);
-            _freezingZone.SetActive(false);
-            _plane = new Plane(Vector3.up, new Vector3(0, 0.66f, 0));
-
+            _freezingObject = Instantiate(actionZone);
+            
+            _freezingZone = _freezingObject.GetComponent<Control.Zone>(); 
+            _freezingZone.SetTriggerFunction(FreezingEnteredObjects);
+            
+            _freezingObject.SetActive(false);
+            _plane = new Plane(Vector3.up, new Vector3(0, PlanetLayHeight, 0));
         }
 
         private void SpawnFreezingZone(Vector3 pos)
         {
-            _freezingZone.SetActive(true);
+            _freezingObject.SetActive(true);
             var ray = MainCamera.ScreenPointToRay(pos);
             if(_plane.Raycast(ray, out var distance))
             {
-                _freezingZone.transform.position = ray.GetPoint(distance);   
+                _freezingObject.transform.position = ray.GetPoint(distance);   
             }
             else
             {
                 throw new MyException("cannot calculate zone position");
+            }
+        }
+
+        private static void FreezingEnteredObjects(Collider other)
+        {
+            var obj = other.gameObject.GetComponent<Skills.IFreezable>();
+            if (obj != null)
+            {
+                //Debug.Log("trigger");
+                obj.Freeze();
+                DeletingFreezingZone += obj.Unfreeze;
             }
         }
 
@@ -56,7 +72,7 @@ namespace Skills
         protected override void CancelSkill()
         {
             DeletingFreezingZone?.Invoke();
-            _freezingZone.SetActive(false);
+            _freezingObject.SetActive(false);
             IsOnCooldown = false;
             UnblockButton();
         }

@@ -12,7 +12,7 @@ namespace Skills
         protected Camera MainCamera;
         protected Managers.ObjectPool ObjectPool;
         protected Planets.Base Planet;
-        protected abstract void ApplySkill();
+        protected abstract void ApplySkill(Vector3 pos);
         protected abstract void CancelSkill();
         protected bool IsOnCooldown = false;
 
@@ -50,12 +50,10 @@ namespace Skills
 
         public void Execute(Vector3 pos)
         {
-            Planet= RaycastForPlanet(pos);
-            if (Planet != null && Planets.Scientific.ScientificCount>Cost && !IsOnCooldown)
+            if (Planets.Scientific.ScientificCount>Cost && !IsOnCooldown)
             {
-                ApplySkill();
-                Planets.Scientific.DecreaseScientificCount(Cost);
-                Invoke(nameof(CancelSkill), Cooldown);
+                ApplySkill(pos);
+                
             }
             else
             {
@@ -63,7 +61,7 @@ namespace Skills
             }
         }
         
-        private Planets.Base RaycastForPlanet(Vector3 pos)
+        protected Planets.Base RaycastForPlanet(Vector3 pos)
         {
             var ray = MainCamera.ScreenPointToRay(pos);
             return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponentInParent<Planets.Base>() : null;

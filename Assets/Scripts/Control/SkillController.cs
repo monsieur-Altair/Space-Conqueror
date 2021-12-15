@@ -25,6 +25,7 @@ namespace Control
         private Skills.Call _call;
         private Skills.Buff _buff;
         private Skills.Acid _acid;
+        private Skills.Ice _ice;
 
         public static SkillController Instance;
         public Camera MainCamera { get; private set; }
@@ -48,6 +49,7 @@ namespace Control
             _call = buttons[Call].GetComponent<Skills.Call>();
             _buff = buttons[Buff].GetComponent<Skills.Buff>();
             _acid = buttons[Acid].GetComponent<Skills.Acid>();
+            _ice = buttons[Ice].GetComponent<Skills.Ice>();
             
             MinDepth = MaxDepth = 0.0f;
             
@@ -60,7 +62,7 @@ namespace Control
         {
             min = max = 0.0f;
             var camera = Camera.main;
-            var plane = new Plane(Vector3.up, new Vector3(0, 0, camera.nearClipPlane));
+            var plane = new Plane(Vector3.up, new Vector3(0, 0, 0));
             var ray = camera.ViewportPointToRay(new Vector3(0,0,0));
             if (plane.Raycast(ray, out var distance))
             {
@@ -76,6 +78,13 @@ namespace Control
                 max = camera.WorldToViewportPoint(topRight).z;
             }
             //Debug.Log("right="+MainCamera.WorldToViewportPoint(topRight));
+            
+            /*ray = camera.ViewportPointToRay(new Vector3(0.5f,0.5f,0));
+            if (plane.Raycast(ray, out var distance2))
+            {
+                var center = ray.GetPoint(distance2);
+                Debug.Log("center = "+center);
+            }*/
         }
         
         public void HandleTouch(Touch touch)
@@ -116,7 +125,7 @@ namespace Control
             {
                 SkillName.Buff => _buff,
                 SkillName.Acid => _acid,
-                SkillName.Ice => null,
+                SkillName.Ice => _ice,
                 SkillName.Call => _call,
                 SkillName.None => null,
                 _ => throw new ArgumentOutOfRangeException()

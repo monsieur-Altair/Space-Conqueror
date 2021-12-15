@@ -14,10 +14,20 @@ namespace Skills
                 BuffPercent = res.buffPercent;
         }
       
-        protected override void ApplySkill()
+        protected override void ApplySkill(Vector3 pos)
         {
-            CallSupply(Planet);
-            IsOnCooldown = true;
+            Planet = RaycastForPlanet(pos);
+            if (Planet != null)
+            {
+                CallSupply(Planet);
+                IsOnCooldown = true;
+                Planets.Scientific.DecreaseScientificCount(Cost);
+                Invoke(nameof(CancelSkill), Cooldown);
+            }
+            else
+            {
+                UnblockButton();
+            }
         }
 
         protected override void CancelSkill()

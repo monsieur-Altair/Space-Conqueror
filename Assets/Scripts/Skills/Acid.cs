@@ -20,11 +20,20 @@ namespace Skills
             }
         }
         
-        protected override void ApplySkill()
+        protected override void ApplySkill(Vector3 pos)
         {
-            IsOnCooldown = true;
-            StartCoroutine(nameof(DamagePlanetByRain));
-
+            Planet= RaycastForPlanet(pos);
+            if (Planet != null)
+            {
+                IsOnCooldown = true;
+                Planets.Scientific.DecreaseScientificCount(Cost);
+                StartCoroutine(nameof(DamagePlanetByRain));
+                Invoke(nameof(CancelSkill), Cooldown);
+            }
+            else
+            {
+                UnblockButton();
+            }
         }
 
         private IEnumerator DamagePlanetByRain()

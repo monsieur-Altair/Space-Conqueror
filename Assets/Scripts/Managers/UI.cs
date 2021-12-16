@@ -21,8 +21,8 @@ namespace Managers
         private List<Planets.Base> _allPlanets => Main.Instance.AllPlanets;
         private Camera _mainCamera;
         
-        private static float MAXDepth;
-        private static float MINDepth;
+        private float _maxDepth;
+        private float _minDepth;
 
         // private Dictionary<int,GameObject> _counter=new Dictionary<int, GameObject>();
         private readonly Dictionary<int,Image> _backgrounds=new Dictionary<int, Image>();
@@ -40,7 +40,7 @@ namespace Managers
 
         private void Start()
         {
-            Control.SkillController.GetCameraDepths(out MINDepth, out MAXDepth);
+            Control.SkillController.GetCameraDepths(out _minDepth, out _maxDepth);
 
             _mainCamera=Camera.main;
             if (_mainCamera == null)
@@ -76,7 +76,7 @@ namespace Managers
         {
             var screenPos = _mainCamera.WorldToScreenPoint(worldPos);
             var depth = screenPos.z;
-            var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth)*80.0f;
+            var offsetY=(_minDepth-depth)/ (_maxDepth-_minDepth)*80.0f;
             //var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth);
             var res = new Vector3(0, offsetY, 0);
             //Debug.Log(res+" "+MAXDepth+" "+MINDepth);
@@ -90,6 +90,7 @@ namespace Managers
             {
                 SetUnitCounterColor(planet);
             }
+            
             textScientific.color=Color.blue;
         }
 

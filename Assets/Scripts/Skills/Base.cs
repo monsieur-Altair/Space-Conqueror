@@ -11,11 +11,11 @@ namespace Skills
         protected Control.SkillController SkillController;
         protected Camera MainCamera;
         protected Managers.ObjectPool ObjectPool;
-        protected Planets.Base Planet;
+        protected Planets.Base SelectedPlanet;
         protected abstract void ApplySkill(Vector3 pos);
         protected abstract void CancelSkill();
         protected bool IsOnCooldown = false;
-
+        protected delegate void UniqueActionToPlanet();
         public float Cooldown { get; private set; }
         public int Cost { get; private set; }
 
@@ -53,7 +53,6 @@ namespace Skills
             if (Planets.Scientific.ScientificCount>Cost && !IsOnCooldown)
             {
                 ApplySkill(pos);
-                
             }
             else
             {
@@ -72,5 +71,22 @@ namespace Skills
             if(!IsOnCooldown)
                 _button.image.color=Color.white;
         }
+
+        protected void ApplySkillToPlanet(Vector3 pos, UniqueActionToPlanet action)
+        {
+            SelectedPlanet = RaycastForPlanet(pos);
+            if (SelectedPlanet != null)
+            {
+                IsOnCooldown = true;
+                Planets.Scientific.DecreaseScientificCount(Cost);
+                action();
+                Invoke(nameof(CancelSkill), Cooldown);
+            }
+            else
+            {
+                UnblockButton();
+            }
+        }
+        
     }
 }

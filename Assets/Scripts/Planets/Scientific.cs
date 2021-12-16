@@ -7,9 +7,9 @@ namespace Planets
     {
         [SerializeField] private Resources.Scientific scientific;
 
-        public int MaxCountScientific { get; private set; }
-        public float ProduceCountScientific { get; private set; }
-        public float ProduceTimeScientific { get; private set; }
+        private int MaxCountScientific { get; set; }
+        private float ProduceCountScientific { get; set; }
+        private float ProduceTimeScientific { get; set; }
         public static float ScientificCount { get; private set; }
 
         public static void DecreaseScientificCount(float value)
@@ -30,8 +30,6 @@ namespace Planets
             ProduceTimeScientific = scientific.produceTime;
         }
 
-
-
         protected override void IncreaseResources()
         {
             base.IncreaseResources();
@@ -46,8 +44,6 @@ namespace Planets
             if (ScientificCount > MaxCountScientific)
                 ScientificCount = MaxCountScientific;
         }
-
-
         
         protected override void DisplayUI()
         {

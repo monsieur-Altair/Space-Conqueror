@@ -54,8 +54,8 @@ namespace Managers
 
         public void CheckGameOver()
         {
-            bool noneBlue = _objectsCount[(int)Planets.Team.Blue]==0;
-            bool noneRed = _objectsCount[(int)Planets.Team.Red]==0;
+            var noneBlue = _objectsCount[(int)Planets.Team.Blue]==0;
+            var noneRed = _objectsCount[(int)Planets.Team.Red]==0;
             
             if (noneBlue)
             {

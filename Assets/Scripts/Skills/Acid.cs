@@ -22,30 +22,23 @@ namespace Skills
         
         protected override void ApplySkill(Vector3 pos)
         {
-            Planet= RaycastForPlanet(pos);
-            if (Planet != null)
-            {
-                IsOnCooldown = true;
-                Planets.Scientific.DecreaseScientificCount(Cost);
-                StartCoroutine(nameof(DamagePlanetByRain));
-                Invoke(nameof(CancelSkill), Cooldown);
-            }
-            else
-            {
-                UnblockButton();
-            }
+            ApplySkillToPlanet(pos,StartRain);
         }
 
+        private void StartRain()
+        {
+            StartCoroutine(nameof(DamagePlanetByRain));
+        }
+        
         private IEnumerator DamagePlanetByRain()
         {
             var count = 0;
             while (count != HitCount)
             {
-                Planet.DecreaseCounter(HitDamage);
+                SelectedPlanet.DecreaseCounter(HitDamage);
                 yield return new WaitForSeconds(HitDuration);
                 count++;
             }
-            
         }
 
         protected override void CancelSkill()

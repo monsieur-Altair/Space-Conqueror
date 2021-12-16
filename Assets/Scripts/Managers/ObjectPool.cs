@@ -57,10 +57,5 @@ namespace Managers
 
             return obj;
         }
-
-        public void ReturnToPool(GameObject obj)
-        {
-            
-        }
     }
 }

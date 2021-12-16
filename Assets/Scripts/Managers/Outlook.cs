@@ -75,7 +75,7 @@ namespace Managers
             _lanternsRenderer.Add(index,circle.transform.GetChild(0).GetComponent<MeshRenderer>());
         }
 
-        private void ComposeScientific(int index, int team)
+        private void SetScientific(int index, int team)
         {
             _planetsRenderer[index].material = scientificMaterials[team];
             _lanternsRenderer[index].material = lanternsMaterials[team];
@@ -89,7 +89,7 @@ namespace Managers
             switch (planet.Type)
             {
                 case Type.Scientific:
-                    ComposeScientific(index,team);
+                    SetScientific(index,team);
                     break;
                 case Type.Spawner:
                     break;
@@ -103,7 +103,7 @@ namespace Managers
         public void SetOutlook(Planets.Base planet, Units.Base unit)
         {
             var team = (int) planet.Team;
-            
+            //also we can add all rockets materials to list 
             unit.transform.GetChild(0).GetComponent<MeshRenderer>().material = rocketsMaterials[team];
         }
         

@@ -74,11 +74,13 @@ namespace Managers
 
         private Vector3 FindOffset(Vector3 worldPos)
         {
+            int coef = _mainCamera.pixelHeight / _mainCamera.pixelWidth;
             var screenPos = _mainCamera.WorldToScreenPoint(worldPos);
             var depth = screenPos.z;
             var offsetY=(_minDepth-depth)/ (_maxDepth-_minDepth)*80.0f;
+            var offsetX=(_minDepth-depth)/ (_maxDepth-_minDepth)*(80.0f/coef);
             //var offsetY=(MINDepth-depth)/ (MAXDepth-MINDepth);
-            var res = new Vector3(0, offsetY, 0);
+            var res = new Vector3(offsetX, offsetY, 0);
             //Debug.Log(res+" "+MAXDepth+" "+MINDepth);
             return res;
         }

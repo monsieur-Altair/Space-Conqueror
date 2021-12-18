@@ -22,13 +22,13 @@ namespace Skills
 
         private void BuffPlanet()
         {
-            SelectedPlanet.BuffUnitAttack(BuffPercent);
+            SelectedPlanet.Buff(BuffPercent);
         }
         
         protected override void CancelSkill()
         {
             IsOnCooldown = false;
-            SelectedPlanet.CancelBuff(BuffPercent);
+            SelectedPlanet.UnBuff(BuffPercent);
             UnblockButton();
         }
     }

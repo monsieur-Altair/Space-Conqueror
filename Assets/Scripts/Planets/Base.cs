@@ -15,7 +15,7 @@ namespace Planets
         Attacker=2
     }
     [RequireComponent(typeof(Collider))]
-    public abstract class Base : MonoBehaviour, Skills.IFreezable
+    public abstract class Base : MonoBehaviour, Skills.IFreezable, Skills.IBuffable
     {
         [SerializeField] private Team team;
         [SerializeField] private Type type;
@@ -23,6 +23,7 @@ namespace Planets
         [SerializeField] private Resources.Planet resourcePlanet;
 
         private const float LaunchCoefficient = 0.5f;
+        
 
         protected Managers.Main Main;
         private Managers.Outlook _outlook;
@@ -46,13 +47,16 @@ namespace Planets
         public Team Team { get; private set; }
         public Type Type { get; private set; }
         
-        
+        public bool IsBuffed { get; private set; }
+
+
         public struct UnitInf
         {
             public float Speed { get; internal set; }
             public float Damage { get; internal set;}
             public float UnitCount { get; internal set; }
             public Team Team { get; internal set; }
+            public bool IsBuffed { get; private set; }
         }
         
 
@@ -166,7 +170,7 @@ namespace Planets
         public void AdjustUnit(Units.Base unit)
         {
             SetUnitCount();
-            _outlook.SetOutlook(this, unit);
+            _outlook.SetUnitOutlook(this, unit);
             unit.SetData(in _unitInf);
         }
         
@@ -202,14 +206,18 @@ namespace Planets
             _count *= -1;
         }
 
-        public void BuffUnitAttack(float percent)
+        public void Buff(float percent)
         {
+            IsBuffed = true;
+            _outlook.SetBuff(this);
             _unitInf.Damage *= (1 + percent / 100.0f);
         }
 
-        public void CancelBuff(float percent)
+        public void UnBuff(float percent)
         {
             _unitInf.Damage /= (1 + percent / 100.0f);
+            IsBuffed = false;
+            _outlook.UnSetBuff(this);
         }
 
         public void Freeze()

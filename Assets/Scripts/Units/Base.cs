@@ -14,7 +14,8 @@ namespace Units
 
         private Vector3 _destination;
         protected Planets.Base Target;
-   
+        
+        public bool IsBuffed { get; private set; }
 
         //override this method to adjust functionality, when unit arrives at the target  
         protected abstract void TargetInRange();
@@ -28,6 +29,7 @@ namespace Units
 
         public void Start()
         {
+            IsBuffed = false;
         }
 
         public void Update()

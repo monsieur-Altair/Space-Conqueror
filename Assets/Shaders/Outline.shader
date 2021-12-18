@@ -1,4 +1,4 @@
-﻿Shader "Ultimate 10+ Shaders/Outline"
+﻿Shader "Space Conqueror/Base Shader"
 {
     Properties
     {

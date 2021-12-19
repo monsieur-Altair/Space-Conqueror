@@ -99,7 +99,7 @@ namespace Control
         private Planets.Base RaycastForPlanet()
         {
             var ray = _mainCamera.ScreenPointToRay(_touch.position);
-            return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponentInParent<Planets.Base>() : null;
+            return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponent<Planets.Base>() : null;
         }
 
         private void HandleMultipleSelection()

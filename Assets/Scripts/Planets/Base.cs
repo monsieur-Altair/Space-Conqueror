@@ -14,7 +14,7 @@ namespace Planets
         Spawner=1,
         Attacker=2
     }
-    [RequireComponent(typeof(Collider))]
+    [RequireComponent(typeof(Collider))]//,typeof(Rigidbody))]
     public abstract class Base : MonoBehaviour, Skills.IFreezable, Skills.IBuffable
     {
         [SerializeField] private Team team;

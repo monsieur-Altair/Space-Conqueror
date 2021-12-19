@@ -59,11 +59,11 @@ namespace Skills
                 UnblockButton();
             }
         }
-        
-        protected Planets.Base RaycastForPlanet(Vector3 pos)
+
+        private Planets.Base RaycastForPlanet(Vector3 pos)
         {
             var ray = MainCamera.ScreenPointToRay(pos);
-            return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponentInParent<Planets.Base>() : null;
+            return Physics.Raycast(ray, out var hit) ? hit.collider.GetComponent<Planets.Base>() : null;
         }
         
         protected void UnblockButton()

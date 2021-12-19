@@ -46,8 +46,6 @@ namespace Managers
 
         public void UpdateObjectsCount(Planets.Team oldTeam, Planets.Team newTeam)
         {
-            //var oldT = ;
-            //var newT = ;
             _objectsCount[(int) oldTeam]--;
             _objectsCount[(int) newTeam]++;
         }

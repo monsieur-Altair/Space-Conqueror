@@ -55,7 +55,7 @@ namespace Skills
             var obj = other.gameObject.GetComponent<Skills.IFreezable>();
             if (obj != null)
             {
-                //Debug.Log("trigger");
+                Debug.Log("trigger");
                 obj.Freeze();
                 DeletingFreezingZone += obj.Unfreeze;
             }
